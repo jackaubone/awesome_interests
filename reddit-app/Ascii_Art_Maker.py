@@ -1,18 +1,20 @@
 import sys
 from ctypes import addressof
 import PIL.Image
+import PIL.ImageEnhance
 import requests
 from io import BytesIO
 
-
-ASCII_CHARS = ["@", "#", "$", "%", "?", "*", "+", ";", ":", ",", "."]
+image_scale = 64
+# ASCII_CHARS1 = ["@", "#", "$", "%", "?", "*", "+", ";", ":", ",", "."]
+ASCII_CHARS = ['.', ',', ':', ';', '+', '*', '?', '%', '$', '#', '@']
 # ASCII_CHARS = ["Ñ", "@", "#", "W", "$", "9", "8", "7", "6", "5", "4", "3", "2","1", "0", "?", "!", "a", "b", "c", ";", ":", "+", "=", "-", ",", ".", "_"]
 
 
-def main():
+def main(path):
     #path = input("Enter the Path/URL to the image field : \n")
-    path = sys.argv[1]
-    print(path)
+    #path = sys.argv[1]
+    # print(path)
     try:
         response = requests.get(path)
         image = PIL.Image.open(BytesIO(response.content))
@@ -21,8 +23,10 @@ def main():
         quit()
     # resize image
     image = resizes(image)
+    # raise contrast of image
+    contrasted_image = raise_contrast(image)
     # convert image to greyscale image
-    greyscale_image = to_greyscale(image)
+    greyscale_image = to_greyscale(contrasted_image)
     # convert greyscale image to ascii characters
     ascii_str = pixel_to_ascii(greyscale_image)
     img_width = greyscale_image.width
@@ -37,18 +41,24 @@ def main():
     print(ascii_img)
 
 
-def resizes(image, new_width=100):
+def resizes(image, new_width=image_scale):
     old_width, old_height = image.size
-    new_height = new_width * (old_height / old_width)
+    new_height = 0.5 * (new_width * (old_height / old_width))
     new_height = int(new_height)
 
     return image.resize((new_width, new_height))
 
 
+def raise_contrast(image):
+    enhancer = PIL.ImageEnhance.Contrast(image)
+    factor = 5
+    image = enhancer.enhance(factor)
+    return image
+
+
 def to_greyscale(image):
 
     image = image.convert("L")
-    print(image)
     return image
 
 
