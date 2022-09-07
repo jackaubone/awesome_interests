@@ -5,10 +5,11 @@ import PIL.ImageEnhance
 import requests
 from io import BytesIO
 
-image_scale = 64
+image_scale = 96
 # ASCII_CHARS1 = ["@", "#", "$", "%", "?", "*", "+", ";", ":", ",", "."]
 ASCII_CHARS = ['.', ',', ':', ';', '+', '*', '?', '%', '$', '#', '@']
 # ASCII_CHARS = ["Ñ", "@", "#", "W", "$", "9", "8", "7", "6", "5", "4", "3", "2","1", "0", "?", "!", "a", "b", "c", ";", ":", "+", "=", "-", ",", ".", "_"]
+image_list = []
 
 
 def main(path):
@@ -23,22 +24,27 @@ def main(path):
         quit()
     # resize image
     image = resizes(image)
+
     # raise contrast of image
     contrasted_image = raise_contrast(image)
+
     # convert image to greyscale image
     greyscale_image = to_greyscale(contrasted_image)
+
     # convert greyscale image to ascii characters
     ascii_str = pixel_to_ascii(greyscale_image)
+
+    # Split the string based on width  of the image
     img_width = greyscale_image.width
     ascii_str_len = len(ascii_str)
     ascii_img = ""
-    # Split the string based on width  of the image
     for i in range(0, ascii_str_len, img_width):
         ascii_img += ascii_str[i: i+img_width] + "\n"
+
     # save the string to a file
-    with open("ascii_image.txt", "w") as f:
-        f.write(ascii_img)
-    print(ascii_img)
+    # with open("ascii_image.txt", "w") as f:
+    #     f.write(ascii_img)
+    image_list.append(ascii_img)
 
 
 def resizes(image, new_width=image_scale):
@@ -51,7 +57,7 @@ def resizes(image, new_width=image_scale):
 
 def raise_contrast(image):
     enhancer = PIL.ImageEnhance.Contrast(image)
-    factor = 5
+    factor = 6
     image = enhancer.enhance(factor)
     return image
 
