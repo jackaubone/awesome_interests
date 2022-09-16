@@ -42,9 +42,11 @@ def main(path):
         ascii_img += ascii_str[i: i+img_width] + "\n"
 
     # save the string to a file
-    # with open("ascii_image.txt", "w") as f:
-    #     f.write(ascii_img)
-    image_list.append(ascii_img)
+    with open("ascii_image.txt", "w") as f:
+        f.write(ascii_img)
+
+    #image_list.append(ascii_img)
+    #print(ascii_img)
 
 
 def resizes(image, new_width=image_scale):

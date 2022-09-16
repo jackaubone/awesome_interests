@@ -24,5 +24,5 @@ for i, entry in enumerate(subreddit_content):
     print("")
     if is_image:
         Ascii_Art_Maker.main(address)
-        # with open('ascii_image.txt', 'r') as image:
-        #     print(image.read())
+        with open('ascii_image.txt', 'r') as image:
+             print(image.read())

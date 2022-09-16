@@ -61,11 +61,15 @@ def main(stdscr):
 #region
 #LOADING ANIMATION
 
-    #X and Y location of top-left box corner, and length of sides
-    relx = 30
-    rely = 10
+
+    #Get length of sides
     lenx = 30
     leny = 5
+
+    #Get dimensions of terminal and set relative position of rectangle
+    height,width = stdscr.getmaxyx()
+    relx = (width//2) - (lenx//2)
+    rely = (height//2) - (leny//2)
 
     #Initiate rectangle pad and add border
     bodypad = curses.newpad(leny, lenx)
@@ -84,8 +88,8 @@ def main(stdscr):
 
     stdscr.bkgd(pair1)
     stdscr.refresh()
-    #refresh location of pad
-    bodypad.refresh(0, 0, rely, relx, rely + leny, relx + lenx)
+    # #refresh location of pad
+    # bodypad.refresh(0, 0, rely, relx, rely + leny, relx + lenx)
 
     #create the pad which animates around bodypad's perimeter
     animepad = curses.newpad(leny, lenx)
@@ -106,6 +110,10 @@ def main(stdscr):
             #The two positive directions
             if k < 2:
                 for j in range(direction[k]):
+                    #Get height and width of terminal, and the relative position of box
+                    height,width = stdscr.getmaxyx()
+                    relx = (width//2) - (lenx//2)
+                    rely = (height//2) - (leny//2)
                     stdscr.clear()
                     stdscr.refresh()
                     if direction[k] == leny:
@@ -123,6 +131,9 @@ def main(stdscr):
             #The two negative directions
             elif k >= 2:
                 for j in range(0, direction[k] + 1, -1):
+                    height,width = stdscr.getmaxyx()
+                    relx = (width//2) - (lenx//2)
+                    rely = (height//2) - (leny//2)                    
                     stdscr.clear()
                     stdscr.refresh()
                     if direction[k] == leny * -1:
