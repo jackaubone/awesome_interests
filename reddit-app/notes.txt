@@ -1,0 +1,7 @@
+Need to reorganize everything into OOP
+- idk if the ascii_art_maker should be one entire class or separate classes.
+
+Need to find a way to add a loading screen, then once everything is loaded, to load all at once
+-Or make it swipe sideways, and see one post at a time, with comments
+
+Need to learn about PRAW: The Python Reddit API Wrapper
