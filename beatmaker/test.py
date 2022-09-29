@@ -1,6 +1,7 @@
+import time
+from time import time
 
-rng = range(3, 80, 6)
-
-
-for i in rng:
-    print(rng[i])
+init_time = time()
+while time() < init_time + 10:
+    print(time())
+print(init_time)

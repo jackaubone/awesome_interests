@@ -37,6 +37,7 @@ def main(stdscr):
 
         stdscr.addstr(y, x, "0")
         stdscr.refresh()
+        time.sleep(0.5)
 
 
 wrapper(main)
