@@ -33,7 +33,7 @@ def main(stdscr):
         stdscr.clear()
 
         string_x += 1
-        stdscr.addstr(0, string_x//5000, "hello_world")
+        stdscr.addstr(0, string_x//500, "hello_world")
 
         stdscr.addstr(y, x, "0")
         stdscr.refresh()
