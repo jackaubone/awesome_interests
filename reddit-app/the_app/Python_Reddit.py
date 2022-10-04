@@ -25,4 +25,4 @@ for i, entry in enumerate(subreddit_content):
     if is_image:
         Ascii_Art_Maker.main(address)
         with open('ascii_image.txt', 'r') as image:
-             print(image.read())
+            print(image.read())

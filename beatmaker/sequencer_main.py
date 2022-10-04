@@ -16,26 +16,26 @@ def main(stdscr):
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_RED)
     curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_YELLOW)
     curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLUE)
+    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_GREEN)
 
     pair1 = curses.color_pair(1)
     pair2 = curses.color_pair(2)
     pair3 = curses.color_pair(3)
+    pair4 = curses.color_pair(4)
 
     # Get dimensions of terminal
     height, width = stdscr.getmaxyx()
     # Set length of sides
     lenx = 100
-    leny = 5
+    leny = 1
     # margin for any ui stuff to add
     ui_y_margin = 5
     # Set relative position of rectangle
     relx = (width//2) - (lenx//2)
     rely = (height//4) - (leny//2) - ui_y_margin
 
-    # Create background pad
-    bodywindow = curses.newwin(leny, lenx)
-    bodywindow.bkgd(pair1)
-    bodywindow.refresh()
+    menu_rely = rely + 3
+    menu_relx = relx
 
 
 # region
@@ -48,93 +48,102 @@ def main(stdscr):
     tempo = 120
     counter = (60000 // tempo) / 1000
 
-    # set padding margin on background
-    margin = (lenx//by_eight)//2
+    #channels = 4
 
+    # cursor location and size of movement spaces
     cursx, cursy = 0, 0
+    stepsize = (lenx//by_eight)
+    real_len = lenx - stepsize
+
+    bodywindow = curses.newwin(leny, real_len)
+    bodywindow.bkgd(pair1)
+    bodywindow.refresh()
+
     init_time = time()
+    trigger_list = [0] * by_eight
     while True:
 
         for j in range(by_eight):
-            # wave_obj = sa.WaveObject.from_wave_file("808_cowbell.wav")
-            # play_obj = wave_obj.play()
+            wave_obj = sa.WaveObject.from_wave_file("808_cowbell.wav")
+
+            if trigger_list[j] == 1:
+                play_obj = wave_obj.play()
+
             pads = list()
             location_list = list()
             # Visuals
 
             while True:
+                metronome_win = curses.newwin(1, 2)
                 bodywindow.clear()
                 curses.doupdate()
+                item = lenx//by_eight + stepsize
+                y = rely + leny//2
+                x = relx + item
 
                 if time() >= init_time + counter:
+
                     init_time = time()
                     for k in range(by_eight):
-                        item = (lenx//by_eight) * k + margin
+
+                        item = (lenx//by_eight) * k
                         y = rely + leny//2
                         x = relx + item
-                        pad1 = curses.newpad(100, 100)
-                        pad_location = (0, 0, y, x, y+1, x+1)
+
+                        pad_location = (y, x)
                         location_list.append(pad_location)
 
                         if k == j:
-                            pad1.bkgd(pair3)
-                            pad1.refresh(0, 0, y, x, y+1, x+1)
+                            metronome_win.bkgd(pair3)
+                            metronome_win.mvwin(y, x)
+                            metronome_win.noutrefresh()
+                        elif trigger_list[k] == 1:
+                            metronome_win.bkgd(pair4)
+                            metronome_win.mvwin(y, x)
+                            metronome_win.noutrefresh()
 
                         else:
-                            pad1.bkgd(pair2)
-                            pad1.refresh(0, 0, y, x, y+1, x+1)
+                            metronome_win.bkgd(pair2)
+                            metronome_win.mvwin(y, x)
+                            metronome_win.noutrefresh()
+                        curses.doupdate()
 
                     break
-                  # delay(counter)
 
-                else:
+                try:
+                    key = stdscr.getkey()
+                except:
+                    key = None
 
-                    try:
-                        key = stdscr.getkey()
-                    except:
-                        key = None
+                if key == "KEY_LEFT":
+                    if cursx <= 0:
+                        cursx = real_len - 4
+                    else:
+                        cursx -= stepsize
+                elif key == "KEY_RIGHT":
+                    if cursx >= real_len - stepsize:
+                        cursx = 0
+                    else:
+                        cursx += stepsize
+                elif key == "KEY_UP":
+                    trigger_list[j] = 1
 
-                    if key == "KEY_LEFT":
-                        cursx -= 1
-                    elif key == "KEY_RIGHT":
-                        cursx += 1
-                    elif key == "KEY_UP":
-                        cursy -= 1
-                    elif key == "KEY_DOWN":
-                        cursy += 1
-                    # bodywindow.addstr(cursy, cursx, "^")
-
-                for h, item, in enumerate(pads):
-                    pad1.refresh(item[0], item[1], item[2],
-                                 item[3], item[4], item[6])
-                testpad = curses.newwin(1000, 1000)
+                testpad = curses.newwin(1, 100)
                 testpad.bkgd(pair1)
-                testpad.addstr(cursy, cursx, "^")
                 testpad.addstr(0, 0, str(init_time))
                 testpad.addstr(0, 20, str(time()))
+                testpad.addstr(0, 40, str(cursx))
+                testpad.addstr(0, 60, str(trigger_list[j]))
 
-                testpad.refresh()
+                bodywindow.mvwin(menu_rely-1, menu_relx)
+                bodywindow.addstr(0, cursx, "$")
 
-            # y = rely + leny//2
-            # x = relx + loc_x[k - 1]
+                testpad.noutrefresh()
+                bodywindow.noutrefresh()
+                metronome_win.noutrefresh()
 
-            # pads[k].bkgd(pair1)
-            # pads[k].refresh(0, 0, y, x, y+1, x+1)
+                curses.doupdate
 
 
 # endregion
-
-    bodypad.getch()
-
-    # Set four beats
-
-
-def delay(secs):
-    init_time = time()
-    while time() < init_time+secs:
-        pass
-
-
 wrapper(main)
-
-# print(pads)
